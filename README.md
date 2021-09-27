@@ -34,8 +34,7 @@ Instrument Digital Cluster for Student EV car and Telemetry System
 
 작동 영상
 
-
-https://user-images.githubusercontent.com/59811368/134841014-a57a58f1-4049-4ed4-846c-80a521b6a9c3.mp4
+https://user-images.githubusercontent.com/59811368/134841349-2187fd9d-8d08-4483-be92-fb9f4c5f9d0f.mp4
 
 
 장착 사진
