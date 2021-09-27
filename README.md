@@ -31,3 +31,14 @@ Instrument Digital Cluster for Student EV car and Telemetry System
  - 아두이노에서 보낸 데이터들을 7인치 디스플레이에 띄우는 역할.
  - 두개의 버튼을 이용하여 타이머 기능 추가(현재 랩타임, 과거 랩타임, 현재 랩수를 디스플레이에 띄워준다.)
  - Daemon을 이용하여 백그라운드에서 실시간으로 모든 데이터를 firebase로 전송한다.
+
+작동 영상
+
+
+https://user-images.githubusercontent.com/59811368/134841014-a57a58f1-4049-4ed4-846c-80a521b6a9c3.mp4
+
+
+장착 사진
+
+![KakaoTalk_20210927_122146344](https://user-images.githubusercontent.com/59811368/134841042-28f3a3ba-47db-4d74-bf6c-fa5513172d9e.jpg)
+
