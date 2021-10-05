@@ -36,9 +36,12 @@ GPIO.setwarnings(False)
 GPIO.setup(start_switch,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(stop_switch,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-
-
-ser = serial.Serial('/dev/ttyUSB0',115200)
+try:
+    ser = serial.Serial('/dev/ttyACM0',115200)
+    
+except serial.serialutil.SerialException:
+    my_gauge.textdraw("Arduino Not Connected",[50,55])
+    time.sleep(5)
 
 
 def displayupdate():
