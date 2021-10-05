@@ -1,8 +1,8 @@
 #include <OneWire.h> 
 #include <DallasTemperature.h>
 /**********************************************/
-#define  A_PHASE 3
-#define  B_PHASE 4
+#define  A_PHASE 2
+#define  B_PHASE 5
 #define ONE_WIRE_BUS 8
 #define ONE_WIRE_BUS2 10
 OneWire oneWire(ONE_WIRE_BUS);
@@ -18,11 +18,15 @@ float time;
 float rpm;
 float km;
 int kmh = 0;
-double Vin;
+float Vin=0;
+float Vin1=0;
+float Vin2=0;
+float Vin3=0;
+float Vin4=0;
 float voltage;
 float vout = 0.0;
-float R1 = 20000.0;
-float R2 = 1000.0;
+float R1 = 100000.0;
+float R2 = 5000.0;
 float left_degree;
 float right_degree;
 
@@ -44,6 +48,7 @@ void interrupt()// Interrupt function
 
 void loop() {
 
+  
   delay(100);// Direction judgement
   sensors.setWaitForConversion(false);
   sensors2.setWaitForConversion(false);
@@ -51,9 +56,7 @@ void loop() {
   sensors2.requestTemperatures();
   sensors.setWaitForConversion(true);
   sensors2.setWaitForConversion(true);
-  Vin = analogRead(A2);
-  vout = (Vin * 5.1) / 1024.0; // see text
-  voltage = vout / (R2/(R1+R2));
+  Vin1 = analogRead(A0);
   
   detachInterrupt(digitalPinToInterrupt(A_PHASE));
   time = millis() - oldtime;
@@ -67,13 +70,14 @@ void loop() {
 
   rpm = rev*60;
   //km = ((rpm/3)*60)*1.36*0.001;  //gear_ratio:3 , ME-09 tire D: 433mm
-  km = ((rpm/3)*60)*1.433*0.001;  //gear_ratio:3 , ME-10 tire D: 456mm
+  km = ((rpm/3)*60)*2.3*0.001;  //gear_ratio:3 , ME-10 tire D: 456mm
   kmh = int(km);
   oldtime = millis();
 
   right_degree = sensors.getTempCByIndex(0);
   left_degree = sensors2.getTempCByIndex(0);
-  
+
+  Vin2 = analogRead(A0); 
   Serial.print(voltage);
   Serial.print("w");
   Serial.print(left_degree);
@@ -85,4 +89,11 @@ void loop() {
   flag_A = 0; // Clear variable just before counting again'
   //flag_B = 0; // Clear variable just before counting again   //장착 방향에 따라 flag_A or flag_B
   attachInterrupt(digitalPinToInterrupt( A_PHASE), interrupt, RISING);
+
+  Vin3 = analogRead(A0);
+  Vin4 = analogRead(A0);
+  Vin = (Vin1 + Vin2 + Vin3 + Vin4)/4;
+  
+  vout = (Vin * 5.031) / 1023.0; // see text
+  voltage = vout / (R2/(R1+R2));
 }
