@@ -40,7 +40,7 @@ try:
     ser = serial.Serial('/dev/ttyACM0',115200)
     
 except serial.serialutil.SerialException:
-    my_gauge.textdraw("Arduino Not Connected",[50,55])
+    print("Arduino Not Connected")
     time.sleep(5)
 
 
