@@ -238,8 +238,6 @@ try:
     ser = serial.Serial('/dev/ttyACM0',115200)
     
 except serial.serialutil.SerialException:
-    my_gauge.textdraw("Arduino Not Connected",[50,55])
-    time.sleep(5)
     os.system("/home/pi/practice/perfect.py")
     
 if __name__ == '__main__':
