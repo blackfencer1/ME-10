@@ -14,6 +14,7 @@ import threading, requests
 
 
 if not firebase_admin._apps:
+    
     cred = credentials.Certificate('/home/pi/practice/me-10server-firebase-adminsdk-ljxt1-e3c959b426.json')
     firebase_admin.initialize_app(cred,{
         'databaseURL':'https://me-10server-default-rtdb.firebaseio.com/'})
@@ -35,28 +36,24 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(start_switch,GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(stop_switch,GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-try:
-    ser = serial.Serial('/dev/ttyACM0',115200)
     
-except serial.serialutil.SerialException:
-    print("Arduino Not Connected")
-    time.sleep(5)
-
 
 def displayupdate():
     
     global voltage
+    #global V
     global left_degree
+    #global ldegree
     global right_degree
+    #global rdegree
     global time1
 
     
     try:
             
         rangauge = ser.readline().decode().strip()
-        #print(rangauge)
-        sowow = rangauge.split(" ")
+        print(rangauge)
+        sowow = rangauge.split("w")
         
         voltage = str(sowow[0])
         left_degree = str(sowow[1])
@@ -64,26 +61,52 @@ def displayupdate():
         wow = sowow[3]
 
         woww= float(wow)
+        V = float(voltage)
+        ldegree = float(left_degree)
+        rdegree = float(right_degree)
         percentage = int(woww)
         
     except ValueError:
             
         percentage = 0
         voltage = "0"
+        V = 0
         left_degree = "0"
+        ldegree = 0
         right_degree = "0"
+        rdegree = 0
         
+    if ldegree >= 70:
+        
+        lcolor =  [255,0,0]
+    else:
+        
+        lcolor = [29,219,22]
     
+    if rdegree >= 70:
+        
+        rcolor =  [255,0,0]
+    else:
+        
+        rcolor = [29,219,22]
+        
+    if V <= 40:
+        
+        vcolor =  [255,0,0]
+    else:
+        
+        vcolor = [29,219,22]
+        
     
     screen.blit(background,(0,0)) ## Blit the background onto the screen first
     my_gauge.draw(percent=percentage)
     my_gauge.textdraw(msg,[50,55])
     my_gauge.textdraw(str(lapnum),[680,60])
     
-    my_gauge.textdraw("Left:   " + left_degree + " °C",[560,195])
-    my_gauge.textdraw("Right: " + right_degree + " °C",[560,245])
-    my_gauge.textdraw("Voltage:",[565,325])
-    my_gauge.textdraw(voltage + " V",[625,390])
+    my_gauge.twrite("Left:   " + left_degree + " °C",lcolor,[560,195])
+    my_gauge.twrite("Right: " + right_degree + " °C",rcolor,[560,245])
+    my_gauge.twrite("Voltage:",vcolor,[565,325])
+    my_gauge.twrite(voltage + " V",vcolor,[625,390])
     my_gauge.textdraw(time1,[15,170])
     my_gauge.textdraw(time2,[15,210])
     my_gauge.textdraw(time3,[15,250])
@@ -110,7 +133,7 @@ def server():
     
     while True:
         
-        print(percentage)
+        
         dir.update({'Laptime': msg})
         dir.update({'voltage': voltage})
         dir.update({'left_degree': left_degree})
@@ -142,6 +165,11 @@ class Gauge:
     def textdraw(self, text,loc):
         
         anotext = self.tFont.render(text, True, [29,219,22])
+        self.screen.blit(anotext, loc)
+        
+    def twrite(self, text,color,loc):
+        
+        anotext = self.tFont.render(text, True, color)
         self.screen.blit(anotext, loc)
         
 
@@ -205,10 +233,19 @@ def stop(channel):
     global stop   
     stop = 1
     
+    
+try:
+    ser = serial.Serial('/dev/ttyACM0',115200)
+    
+except serial.serialutil.SerialException:
+    my_gauge.textdraw("Arduino Not Connected",[50,55])
+    time.sleep(5)
+    os.system("/home/pi/practice/perfect.py")
+    
 if __name__ == '__main__':
 
     time.sleep(1)
-    circle_c = (166,166,166)   # circle color RGB
+    circle_c = (116,116,116)   # circle color RGB
 
     pygame.init()
     width = 800
