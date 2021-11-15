@@ -1,6 +1,10 @@
+#include <Adafruit_ADS1015.h>
+#include <Arduino.h>
+#include <Wire.h>
 #include <OneWire.h> 
 #include <DallasTemperature.h>
 /**********************************************/
+Adafruit_ADS1115 ads(0x48);
 #define  A_PHASE 2
 #define  B_PHASE 5
 #define ONE_WIRE_BUS 8
@@ -18,12 +22,8 @@ float time;
 float rpm;
 float km;
 int kmh = 0;
-float Vin=0;
-float Vin1=0;
-float Vin2=0;
-float Vin3=0;
-float Vin4=0;
-float voltage;
+int calib = 6; // Value of calibration of ADS1115 to reduce error
+float voltage=0;
 float vout = 0.0;
 float R1 = 100000.0;
 float R2 = 5000.0;
@@ -37,6 +37,7 @@ void setup() {
   Serial.begin(115200);   //Serial Port Baudrate: 115200
   sensors.begin();
   sensors2.begin();
+  ads.begin();
   attachInterrupt(digitalPinToInterrupt( A_PHASE), interrupt, RISING); //Interrupt trigger mode: RISING
 }
 
@@ -56,7 +57,6 @@ void loop() {
   sensors2.requestTemperatures();
   sensors.setWaitForConversion(true);
   sensors2.setWaitForConversion(true);
-  Vin1 = analogRead(A0);
   
   detachInterrupt(digitalPinToInterrupt(A_PHASE));
   time = millis() - oldtime;
@@ -77,7 +77,11 @@ void loop() {
   right_degree = sensors.getTempCByIndex(0);
   left_degree = sensors2.getTempCByIndex(0);
 
-  Vin2 = analogRead(A0); 
+  int16_t adc0; // 16 bits ADC read of input A0
+  adc0 = ads.readADC_SingleEnded(0);
+  vout = ((adc0 + calib) * 0.1868)/1000; // see text
+  voltage = vout / (R2/(R1+R2));
+  
   Serial.print(voltage);
   Serial.print("w");
   Serial.print(left_degree);
@@ -85,15 +89,9 @@ void loop() {
   Serial.print(right_degree);
   Serial.print("w");
   Serial.println(kmh);
-
+  
   flag_A = 0; // Clear variable just before counting again'
   //flag_B = 0; // Clear variable just before counting again   //장착 방향에 따라 flag_A or flag_B
   attachInterrupt(digitalPinToInterrupt( A_PHASE), interrupt, RISING);
-
-  Vin3 = analogRead(A0);
-  Vin4 = analogRead(A0);
-  Vin = (Vin1 + Vin2 + Vin3 + Vin4)/4;
   
-  vout = (Vin * 5.031) / 1023.0; // see text
-  voltage = vout / (R2/(R1+R2));
 }
