@@ -17,6 +17,7 @@ Instrument Digital Cluster for Student EV car and Telemetry System
  - 속도센서: 엔코더(펄스갯수: 360)
  - 온도센서: ds18b20(방수형)(좌우 동일)
  - 전압측정: 100K옴 과 5K옴을 병렬연결하여 아두이노 아날로그 input핀을 통하여 측정
+ - ADS1115: 전압 센싱과정에서 발생하는 노이즈 감소를 위해 추가
  
  
 아두이노
